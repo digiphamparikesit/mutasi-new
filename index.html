@@ -45,7 +45,7 @@
   label{font-size:12px;font-weight:600;color:#555}
   input,select,textarea{padding:8px 10px;border:1px solid #d0d5dd;border-radius:6px;font-size:13px;color:#333;background:#fff;width:100%}
   input:focus,select:focus,textarea:focus{outline:none;border-color:#1a56db;box-shadow:0 0 0 2px rgba(26,86,219,0.1)}
-  textarea{resize:vertical;min-height:70px}
+  textarea{resize:vertical;min-height:70px;font-family:inherit}
   .btn{padding:9px 18px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
   .btn-primary{background:#1a56db;color:#fff}
   .btn-primary:hover{background:#1447c0}
@@ -121,11 +121,12 @@
   .tgl-separator{font-size:11px;color:#888}
   .pengumuman-bar{background:#fde8e8;border:1px solid #f5b8b8;border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:8px}
   .pengumuman-bar .pg-icon{font-size:18px;flex-shrink:0;margin-top:1px}
-  .pengumuman-bar .pg-body{flex:1}
+  .pengumuman-bar .pg-body{flex:1;min-width:0}
   .pengumuman-bar .pg-judul{font-size:11px;font-weight:700;color:#c81e1e;margin-bottom:3px}
-  .pengumuman-bar .pg-isi{font-size:11px;color:#7f1d1d;line-height:1.5}
+  .pengumuman-bar .pg-isi{font-size:11px;color:#7f1d1d;line-height:1.5;word-wrap:break-word}
   .pengumuman-bar .pg-waktu{font-size:10px;color:#e07070;margin-top:4px}
   .pengumuman-bar .pg-tutup{background:none;border:none;color:#c81e1e;cursor:pointer;font-size:16px;padding:0 4px;flex-shrink:0;opacity:0.7}
+  .pengumuman-bar .pg-tutup:hover{opacity:1}
   .rko-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
   .btn-rko{background:#dc2626;color:#fff;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:background 0.15s;box-shadow:0 2px 6px rgba(220,38,38,0.3)}
   .btn-rko:hover{background:#b91c1c}
@@ -168,7 +169,7 @@
   .user-info{flex:1;min-width:200px}
   .user-nama{font-weight:700;font-size:13px;color:#333}
   .user-meta{font-size:11px;color:#666;margin-top:2px}
-  .user-actions{display:flex;gap:6px;align-items:center}
+  .user-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
   @media print{
     .sticky-header,.laporan-filter button,.btn-rko,.notif-banner{display:none!important}
     .laporan-panel{position:static;overflow:visible}
@@ -181,7 +182,9 @@
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ═══════════════════════════════════════════════════════════
+     HALAMAN LOGIN
+     ═══════════════════════════════════════════════════════════ -->
 <div id="halaman-login">
   <div class="login-card">
     <div class="login-logo">💊</div>
@@ -232,7 +235,9 @@
   </div>
 </div>
 
-<!-- APP -->
+<!-- ═══════════════════════════════════════════════════════════
+     HALAMAN APP
+     ═══════════════════════════════════════════════════════════ -->
 <div id="halaman-app">
   <div class="sticky-header">
     <div class="topbar">
@@ -249,18 +254,9 @@
   </div>
 
   <div class="content-wrapper">
+    <!-- BANNER: pengumuman + RKO -->
     <div class="banner-area">
-      <div id="blok-pengumuman" style="display:none">
-        <div class="pengumuman-bar">
-          <div class="pg-icon">📢</div>
-          <div class="pg-body">
-            <div class="pg-judul" id="pg-judul"></div>
-            <div class="pg-isi" id="pg-isi"></div>
-            <div class="pg-waktu" id="pg-waktu"></div>
-          </div>
-          <button class="pg-tutup" onclick="tutupPengumuman()" title="Tutup">✕</button>
-        </div>
-      </div>
+      <div id="blok-pengumuman" style="display:none"></div>
       <div id="blok-rko" style="display:none">
         <div class="rko-bar">
           <a class="btn-rko" href="https://bit.ly/m/RKO_RSAMP" target="_blank" rel="noopener">📋 RKO OBAT &amp; BMHP</a>
@@ -269,6 +265,7 @@
       </div>
     </div>
 
+    <!-- TAB FORM -->
     <div id="tab-form" class="tab-panel" style="display:none">
       <div class="content">
         <div class="card">
@@ -302,6 +299,7 @@
       </div>
     </div>
 
+    <!-- TAB STATUS SAYA -->
     <div id="tab-status" class="tab-panel" style="display:none">
       <div class="content">
         <div class="filter-bar">
@@ -316,6 +314,7 @@
       </div>
     </div>
 
+    <!-- TAB GUDANG (Dashboard) -->
     <div id="tab-gudang" class="tab-panel split-panel" style="display:none">
       <div class="panel-kiri">
         <div class="notif-banner" id="notif-banner" style="display:none">
@@ -371,7 +370,7 @@
       </div>
     </div>
 
-    <!-- TAB KELOLA PENGGUNA (kepala_gudang) -->
+    <!-- TAB KELOLA PENGGUNA -->
     <div id="tab-pengguna" class="tab-panel" style="display:none">
       <div class="content">
         <div class="filter-bar">
@@ -382,10 +381,28 @@
       </div>
     </div>
 
+    <!-- TAB PENGUMUMAN (kepala_gudang) -->
+    <div id="tab-pengumuman" class="tab-panel" style="display:none">
+      <div class="content" style="max-width:800px">
+        <div class="card">
+          <h3>📢 Kelola Pengumuman</h3>
+          <p style="font-size:12px;color:#666;margin-bottom:14px">
+            Pengumuman yang <b>aktif</b> akan muncul otomatis di halaman semua user (kecuali Kepala Gudang). Perubahan langsung terlihat tanpa perlu update aplikasi.
+          </p>
+          <div id="list-pengumuman-admin"></div>
+          <div class="btn-row" style="margin-top:16px">
+            <button class="btn btn-primary" onclick="bukaFormPengumumanBaru()">＋ Tambah Pengumuman</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- TAB LAPORAN -->
+<!-- ═══════════════════════════════════════════════════════════
+     TAB LAPORAN (full-screen)
+     ═══════════════════════════════════════════════════════════ -->
 <div id="tab-laporan" class="tab-panel laporan-panel" style="display:none">
   <div class="laporan-wrap">
     <div class="laporan-filter">
@@ -425,7 +442,9 @@
   </div>
 </div>
 
-<!-- MODAL UPDATE STATUS -->
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL UPDATE STATUS
+     ═══════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-update">
   <div class="modal">
     <h3>✏️ Update Status Amprahan</h3>
@@ -447,7 +466,9 @@
   </div>
 </div>
 
-<!-- MODAL DAFTAR AKUN -->
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL DAFTAR AKUN
+     ═══════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-daftar">
   <div class="modal">
     <h3>✚ Buat Akun Baru</h3>
@@ -500,7 +521,9 @@
   </div>
 </div>
 
-<!-- MODAL EDIT USER (admin) -->
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL EDIT USER
+     ═══════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-edit-user">
   <div class="modal">
     <h3>✏️ Edit Pengguna</h3>
@@ -528,6 +551,38 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════
+     MODAL EDIT/TAMBAH PENGUMUMAN
+     ═══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-pengumuman">
+  <div class="modal" style="max-width:520px">
+    <h3 id="modal-pg-title">✏️ Edit Pengumuman</h3>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Judul</label>
+      <input type="text" id="pg-input-judul" placeholder="📢 Pengumuman Gudang Farmasi">
+    </div>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Isi Pengumuman</label>
+      <textarea id="pg-input-isi" rows="6" placeholder="Tulis isi pengumuman... (boleh multi-baris)"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Ditandatangani oleh</label>
+      <input type="text" id="pg-input-waktu" placeholder="27 Juli 2026 — Kepala Gudang Farmasi">
+    </div>
+    <div class="form-group" style="margin-bottom:16px" id="pg-group-aktif">
+      <label>Status</label>
+      <select id="pg-input-aktif">
+        <option value="true">Aktif (tampil ke user)</option>
+        <option value="false">Nonaktif (disembunyikan)</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="simpanPengumuman()" id="btn-simpan-pg">Simpan</button>
+      <button class="btn btn-secondary" onclick="tutupModalPengumuman()">Batal</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -540,22 +595,17 @@ const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 const PAGE_SIZE = 10;
 
-const PENGUMUMAN_AKTIF = true;
-const PENGUMUMAN = {
-  judul : "📢 Pengumuman Gudang Farmasi",
-  isi   : "Mohon perhatian seluruh petugas: STOK OPNAME RUANGAN: Senin 24 Agustus 2026. Amprahan Terakhir: Selasa 18 Agustus 2026, pengantaran 19 Agustus 2026. Boleh Amprah lagi setelah SO: Senin 26 Agustus 2026. RKO Max 26 Agustus 2026 jam 09.00.",
-  waktu : "27 Juli 2026 — Kepala Gudang Farmasi",
-};
-
 const JENIS_OBAT_LIST = ["obat"];
 const JENIS_BHP_LIST  = ["bmhp","cairan","b3"];
 
-let user=null, allAmprahan=[], dataGudang=[], dataPengguna=[], editUserId=null;
+let user = null;
+let allAmprahan = [], dataGudang = [], dataPengguna = [], dataPengumumanAdmin = [];
 let filterStatus="semua", filterGudang="Belum Dilayani", filterKategori="semua", filterJenis="semua";
-let editId=null, dupSet=new Set();
+let editId=null, editUserId=null, editPengumumanId=null, dupSet=new Set();
 let pagStatus=1, pagGudang=1;
 let filterTglDari="", filterTglSampai="";
 let notifInterval=null, idKnown=new Set(), notifAktif=false;
+let dataLaporan = [];
 
 // ═══════════════════════════════════════════════════════════
 // API WRAPPER → Supabase RPC
@@ -564,6 +614,7 @@ async function api(body) {
   const a = body.action;
   try {
     let r;
+
     if (a === "login")
       r = await sb.rpc("rpc_login", { p_nama: body.nama, p_ruangan: body.ruangan });
 
@@ -600,6 +651,28 @@ async function api(body) {
     else if (a === "getStatusRKO")
       r = await sb.rpc("rpc_get_status_rko", { p_ruangan: body.ruangan });
 
+    // ── PENGUMUMAN ──
+    else if (a === "getPengumuman")
+      r = await sb.rpc("rpc_get_pengumuman");
+
+    else if (a === "updatePengumuman")
+      r = await sb.rpc("rpc_update_pengumuman", {
+        p_role_admin: body.roleAdmin, p_id: body.id,
+        p_judul: body.judul, p_isi: body.isi,
+        p_waktu: body.waktu, p_aktif: body.aktif
+      });
+
+    else if (a === "tambahPengumuman")
+      r = await sb.rpc("rpc_tambah_pengumuman", {
+        p_role_admin: body.roleAdmin, p_judul: body.judul,
+        p_isi: body.isi, p_waktu: body.waktu
+      });
+
+    else if (a === "hapusPengumuman")
+      r = await sb.rpc("rpc_hapus_pengumuman", {
+        p_role_admin: body.roleAdmin, p_id: body.id
+      });
+
     else return { ok:false, msg:"Action tidak dikenal: " + a };
 
     if (r.error) return { ok:false, msg: r.error.message };
@@ -610,117 +683,167 @@ async function api(body) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// DAFTAR AKUN
+// HELPER
 // ═══════════════════════════════════════════════════════════
-function bukaModalDaftar() {
-  document.getElementById("daftar-nama").value = "";
-  document.getElementById("daftar-ruangan").value = "";
-  document.getElementById("modal-daftar").classList.add("open");
+function escapeHtml(s) {
+  return String(s||"").replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-function tutupModalDaftar() { document.getElementById("modal-daftar").classList.remove("open"); }
-
-async function submitDaftar() {
-  const nama    = document.getElementById("daftar-nama").value.trim();
-  const ruangan = document.getElementById("daftar-ruangan").value.trim();
-  if (!nama || !ruangan) { showToast("Lengkapi nama dan ruangan.","error"); return; }
-
-  const btn = document.getElementById("btn-daftar");
-  btn.disabled=true; btn.textContent="Memproses...";
-
-  const res = await api({ action:"daftarAkun", nama, ruangan });
-
-  btn.disabled=false; btn.textContent="Daftar Sekarang";
-
-  if (!res.ok) { showToast(res.msg,"error"); return; }
-
-  showToast("✅ " + res.msg, "success");
-  tutupModalDaftar();
-  document.getElementById("login-nama").value = nama;
-  document.getElementById("login-ruangan").value = ruangan;
-  document.getElementById("login-nama").focus();
+function hariIni(){ return new Date().toISOString().split("T")[0]; }
+function loadingHtml(){ return `<div class="loading"><div class="spinner"></div><br>Memuat data...</div>`; }
+function showToast(msg,type="info"){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.className = "toast "+type+" show";
+  setTimeout(() => t.classList.remove("show"), 3500);
 }
 
 // ═══════════════════════════════════════════════════════════
-// KELOLA PENGGUNA (kepala_gudang)
+// PENGUMUMAN DINAMIS
 // ═══════════════════════════════════════════════════════════
-async function loadPengguna() {
-  const el = document.getElementById("list-pengguna");
+async function loadPengumumanDanTampilkan() {
+  const wrap = document.getElementById("blok-pengumuman");
+  if (!wrap) return;
+  try {
+    const res = await api({ action: "getPengumuman" });
+    if (!res.ok || !res.data || !res.data.length) {
+      wrap.style.display = "none";
+      return;
+    }
+    renderBlokPengumuman(res.data);
+  } catch (e) {
+    wrap.style.display = "none";
+  }
+}
+
+function renderBlokPengumuman(list) {
+  const wrap = document.getElementById("blok-pengumuman");
+  if (!list.length) { wrap.style.display = "none"; return; }
+  wrap.innerHTML = list.map((p, i) => `
+    <div class="pengumuman-bar" style="${i>0?'margin-top:8px':''}">
+      <div class="pg-icon">📢</div>
+      <div class="pg-body">
+        <div class="pg-judul">${escapeHtml(p.judul)}</div>
+        <div class="pg-isi">${escapeHtml(p.isi)}</div>
+        <div class="pg-waktu">${escapeHtml(p.waktu)} · diperbarui ${escapeHtml(p.updatedAt)}</div>
+      </div>
+      <button class="pg-tutup" onclick="this.closest('.pengumuman-bar').remove();ajustSplitHeight();" title="Tutup">✕</button>
+    </div>
+  `).join("");
+  wrap.style.display = "block";
+  setTimeout(ajustSplitHeight, 50);
+}
+
+// ═══════════════════════════════════════════════════════════
+// KELOLA PENGUMUMAN (kepala_gudang)
+// ═══════════════════════════════════════════════════════════
+async function loadPengumumanAdmin() {
+  const el = document.getElementById("list-pengumuman-admin");
   if (!el) return;
   el.innerHTML = loadingHtml();
-  const res = await api({ action:"getPengguna", roleAdmin:user.role });
-  if (!res.ok) { el.innerHTML=`<div class="empty">${res.msg}</div>`; return; }
-  dataPengguna = res.data;
-  renderPengguna();
+
+  const res = await api({ action: "getPengumuman" });
+  if (!res.ok) { el.innerHTML = `<div class="empty">${res.msg}</div>`; return; }
+  dataPengumumanAdmin = res.data || [];
+  renderPengumumanAdmin();
 }
 
-function renderPengguna() {
-  const el = document.getElementById("list-pengguna");
-  if (!el) return;
-  const q = (document.getElementById("search-user")?.value || "").toLowerCase();
-  const filtered = dataPengguna.filter(u =>
-    !q || u.nama.toLowerCase().includes(q) || u.ruangan.toLowerCase().includes(q)
-  );
-
-  if (!filtered.length) { el.innerHTML=`<div class="empty">Tidak ada pengguna.</div>`; return; }
-
-  el.innerHTML = filtered.map(u => `
-    <div class="user-item ${u.aktif ? '' : 'inaktif'}">
-      <div class="user-info">
-        <div class="user-nama">${u.nama}</div>
-        <div class="user-meta">🏥 ${u.ruangan} · 📅 ${u.tglDaftar}</div>
+function renderPengumumanAdmin() {
+  const el = document.getElementById("list-pengumuman-admin");
+  if (!dataPengumumanAdmin.length) {
+    el.innerHTML = `<div class="empty">Belum ada pengumuman aktif.</div>`;
+    return;
+  }
+  el.innerHTML = dataPengumumanAdmin.map(p => `
+    <div class="amp-item" style="border-left-color:#1a56db;margin-bottom:10px">
+      <div class="amp-header">
+        <div>
+          <div style="font-weight:700;color:#1a56db;font-size:13px">${escapeHtml(p.judul)}</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">
+            ${escapeHtml(p.waktu||'-')} · diperbarui ${escapeHtml(p.updatedAt)}
+          </div>
+        </div>
+        <span class="badge badge-sudah">Aktif</span>
       </div>
-      <div class="user-actions">
-        <span class="badge badge-${u.role}">${labelRole(u.role)}</span>
-        <span class="badge ${u.aktif?'badge-sudah':'badge-batal'}">${u.aktif?'Aktif':'Nonaktif'}</span>
-        <button class="btn btn-warning btn-sm" onclick="bukaEditUser(${u.id})">✏️</button>
+      <div style="font-size:12px;color:#555;margin-top:8px;white-space:pre-wrap">${escapeHtml(p.isi)}</div>
+      <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-warning btn-sm" onclick="editPengumuman(${p.id})">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="konfirmasiHapusPengumuman(${p.id})">🗑️ Hapus</button>
       </div>
     </div>
   `).join("");
 }
 
-function labelRole(r) {
-  return { peminta:"Peminta", gudang_obat:"Gudang Obat",
-           gudang_bhp:"Gudang BHP", kepala_gudang:"Kepala Gudang" }[r] || r;
+function bukaFormPengumumanBaru() {
+  editPengumumanId = null;
+  document.getElementById("modal-pg-title").textContent = "＋ Tambah Pengumuman";
+  document.getElementById("pg-input-judul").value = "📢 Pengumuman Gudang Farmasi";
+  document.getElementById("pg-input-isi").value = "";
+  document.getElementById("pg-input-waktu").value =
+    new Date().toLocaleDateString("id-ID",{day:'numeric',month:'long',year:'numeric'})
+    + " — Kepala Gudang Farmasi";
+  document.getElementById("pg-group-aktif").style.display = "none";
+  document.getElementById("modal-pengumuman").classList.add("open");
 }
 
-function bukaEditUser(id) {
-  const u = dataPengguna.find(x => x.id === id);
-  if (!u) return;
-  editUserId = id;
-  document.getElementById("modal-user-detail").innerHTML = `
-    <div class="modal-row"><span>Nama</span><span><b>${u.nama}</b></span></div>
-    <div class="modal-row"><span>Ruangan</span><span>${u.ruangan}</span></div>
-    <div class="modal-row"><span>Terdaftar</span><span>${u.tglDaftar}</span></div>`;
-  document.getElementById("edit-user-role").value  = u.role;
-  document.getElementById("edit-user-aktif").value = u.aktif ? "true" : "false";
-  document.getElementById("modal-edit-user").classList.add("open");
-}
-function tutupModalEditUser() {
-  document.getElementById("modal-edit-user").classList.remove("open");
-  editUserId = null;
+function editPengumuman(id) {
+  const p = dataPengumumanAdmin.find(x => x.id === id);
+  if (!p) return;
+  editPengumumanId = id;
+  document.getElementById("modal-pg-title").textContent = "✏️ Edit Pengumuman";
+  document.getElementById("pg-input-judul").value = p.judul;
+  document.getElementById("pg-input-isi").value   = p.isi;
+  document.getElementById("pg-input-waktu").value = p.waktu;
+  document.getElementById("pg-input-aktif").value = "true";
+  document.getElementById("pg-group-aktif").style.display = "block";
+  document.getElementById("modal-pengumuman").classList.add("open");
 }
 
-async function simpanEditUser() {
-  if (!editUserId) return;
-  const role  = document.getElementById("edit-user-role").value;
-  const aktif = document.getElementById("edit-user-aktif").value === "true";
-  const btn = document.getElementById("btn-simpan-user");
-  btn.disabled=true; btn.textContent="Menyimpan...";
+function tutupModalPengumuman() {
+  document.getElementById("modal-pengumuman").classList.remove("open");
+  editPengumumanId = null;
+}
 
-  const res = await api({
-    action:"updatePengguna", roleAdmin:user.role,
-    id:editUserId, role, aktif
-  });
+async function simpanPengumuman() {
+  const judul = document.getElementById("pg-input-judul").value.trim();
+  const isi   = document.getElementById("pg-input-isi").value.trim();
+  const waktu = document.getElementById("pg-input-waktu").value.trim();
+  const aktif = document.getElementById("pg-input-aktif").value === "true";
 
-  btn.disabled=false; btn.textContent="Simpan";
+  if (isi.length < 5) { showToast("Isi pengumuman minimal 5 karakter.","error"); return; }
+
+  const btn = document.getElementById("btn-simpan-pg");
+  btn.disabled = true; btn.textContent = "Menyimpan...";
+
+  let res;
+  if (editPengumumanId) {
+    res = await api({
+      action:"updatePengumuman", roleAdmin:user.role,
+      id:editPengumumanId, judul, isi, waktu, aktif
+    });
+  } else {
+    res = await api({
+      action:"tambahPengumuman", roleAdmin:user.role,
+      judul, isi, waktu
+    });
+  }
+
+  btn.disabled = false; btn.textContent = "Simpan";
   if (!res.ok) { showToast(res.msg,"error"); return; }
   showToast("✅ " + res.msg, "success");
-  tutupModalEditUser();
-  loadPengguna();
+  tutupModalPengumuman();
+  loadPengumumanAdmin();
+}
+
+async function konfirmasiHapusPengumuman(id) {
+  if (!confirm("Yakin hapus pengumuman ini?")) return;
+  const res = await api({ action:"hapusPengumuman", roleAdmin:user.role, id });
+  if (!res.ok) { showToast(res.msg,"error"); return; }
+  showToast("✅ Pengumuman dihapus.","success");
+  loadPengumumanAdmin();
 }
 
 // ═══════════════════════════════════════════════════════════
-// NOTIFIKASI
+// NOTIFIKASI BROWSER
 // ═══════════════════════════════════════════════════════════
 function cekStatusNotif() {
   if (!("Notification" in window)) return;
@@ -782,7 +905,6 @@ function stopAutoRefresh() {
   if (notifInterval) clearInterval(notifInterval);
   notifInterval=null; idKnown.clear();
 }
-
 function isJenisSesuaiRole(jenis,role) {
   const j = (jenis||"").trim().toLowerCase();
   if (role==="gudang_obat") return JENIS_OBAT_LIST.includes(j);
@@ -791,7 +913,7 @@ function isJenisSesuaiRole(jenis,role) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// LOGIN / LOGOUT
+// LOGIN
 // ═══════════════════════════════════════════════════════════
 async function doLogin() {
   const nama = document.getElementById("login-nama").value.trim();
@@ -811,7 +933,7 @@ async function doLogin() {
 }
 function showErr(el,msg){ el.textContent=msg; el.style.display="block"; }
 
-function masukApp() {
+async function masukApp() {
   document.getElementById("halaman-login").style.display="none";
   document.getElementById("halaman-app").classList.add("aktif");
   ajustSplitHeight();
@@ -831,12 +953,13 @@ function masukApp() {
   document.getElementById("blok-rko").style.display = "block";
   cekStatusRKO();
 
-  if (user.role!=="kepala_gudang" && PENGUMUMAN_AKTIF) {
-    document.getElementById("pg-judul").textContent = PENGUMUMAN.judul;
-    document.getElementById("pg-isi").textContent   = PENGUMUMAN.isi;
-    document.getElementById("pg-waktu").textContent = PENGUMUMAN.waktu;
-    document.getElementById("blok-pengumuman").style.display = "block";
+  // Pengumuman: load dari Supabase (semua role kecuali kepala_gudang)
+  if (user.role !== "kepala_gudang") {
+    await loadPengumumanDanTampilkan();
+  } else {
+    document.getElementById("blok-pengumuman").style.display = "none";
   }
+
   switchTab(isGudang ? "gudang" : "form");
 }
 
@@ -856,6 +979,7 @@ function ajustSplitHeight() {
 function doLogout() {
   stopAutoRefresh();
   user=null; allAmprahan=[]; dataGudang=[]; dupSet=new Set(); dataPengguna=[];
+  dataPengumumanAdmin=[]; dataLaporan=[];
   document.getElementById("halaman-login").style.display = "flex";
   document.getElementById("halaman-app").classList.remove("aktif");
   document.getElementById("login-nama").value = "";
@@ -877,8 +1001,13 @@ function renderTabBar() {
 
   let tabs;
   if (isKepala) {
-    tabs = [["gudang","📊 Dashboard"],["laporan","📈 Laporan"],
-            ["pengguna","👥 Kelola Pengguna"],["form","📋 Form Amprahan"]];
+    tabs = [
+      ["gudang","📊 Dashboard"],
+      ["laporan","📈 Laporan"],
+      ["pengumuman","📢 Pengumuman"],
+      ["pengguna","👥 Kelola Pengguna"],
+      ["form","📋 Form Amprahan"]
+    ];
   } else if (isGudang) {
     tabs = [["gudang","📊 Dashboard"],["laporan","📈 Laporan"],["form","📋 Form Amprahan"]];
   } else {
@@ -888,6 +1017,7 @@ function renderTabBar() {
     `<div class="tab" id="tabn-${id}" onclick="switchTab('${id}')">${label}</div>`
   ).join("");
 }
+
 function switchTab(name) {
   document.querySelectorAll(".tab-panel").forEach(p => p.style.display = "none");
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -895,16 +1025,331 @@ function switchTab(name) {
   const tabEl = document.getElementById("tabn-"+name);
   if (panel) panel.style.display = name==="gudang" ? "flex" : "block";
   if (tabEl) tabEl.classList.add("active");
-  if (name==="status")   loadAmprahan();
-  if (name==="gudang")   { loadGudang(); ajustSplitHeight(); }
-  if (name==="laporan")  loadLaporan();
-  if (name==="pengguna") loadPengguna();
+
+  if (name==="status")     loadAmprahan();
+  if (name==="gudang")     { loadGudang(); ajustSplitHeight(); }
+  if (name==="laporan")    loadLaporan();
+  if (name==="pengguna")   loadPengguna();
+  if (name==="pengumuman") loadPengumumanAdmin();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DAFTAR AKUN
+// ═══════════════════════════════════════════════════════════
+function bukaModalDaftar() {
+  document.getElementById("daftar-nama").value = "";
+  document.getElementById("daftar-ruangan").value = "";
+  document.getElementById("modal-daftar").classList.add("open");
+}
+function tutupModalDaftar() { document.getElementById("modal-daftar").classList.remove("open"); }
+
+async function submitDaftar() {
+  const nama    = document.getElementById("daftar-nama").value.trim();
+  const ruangan = document.getElementById("daftar-ruangan").value.trim();
+  if (!nama || !ruangan) { showToast("Lengkapi nama dan ruangan.","error"); return; }
+  const btn = document.getElementById("btn-daftar");
+  btn.disabled=true; btn.textContent="Memproses...";
+  const res = await api({ action:"daftarAkun", nama, ruangan });
+  btn.disabled=false; btn.textContent="Daftar Sekarang";
+  if (!res.ok) { showToast(res.msg,"error"); return; }
+  showToast("✅ " + res.msg, "success");
+  tutupModalDaftar();
+  document.getElementById("login-nama").value = nama;
+  document.getElementById("login-ruangan").value = ruangan;
+  document.getElementById("login-nama").focus();
+}
+
+// ═══════════════════════════════════════════════════════════
+// KELOLA PENGGUNA
+// ═══════════════════════════════════════════════════════════
+async function loadPengguna() {
+  const el = document.getElementById("list-pengguna");
+  if (!el) return;
+  el.innerHTML = loadingHtml();
+  const res = await api({ action:"getPengguna", roleAdmin:user.role });
+  if (!res.ok) { el.innerHTML=`<div class="empty">${res.msg}</div>`; return; }
+  dataPengguna = res.data;
+  renderPengguna();
+}
+
+function renderPengguna() {
+  const el = document.getElementById("list-pengguna");
+  if (!el) return;
+  const q = (document.getElementById("search-user")?.value || "").toLowerCase();
+  const filtered = dataPengguna.filter(u =>
+    !q || u.nama.toLowerCase().includes(q) || u.ruangan.toLowerCase().includes(q)
+  );
+  if (!filtered.length) { el.innerHTML=`<div class="empty">Tidak ada pengguna.</div>`; return; }
+  el.innerHTML = filtered.map(u => `
+    <div class="user-item ${u.aktif ? '' : 'inaktif'}">
+      <div class="user-info">
+        <div class="user-nama">${escapeHtml(u.nama)}</div>
+        <div class="user-meta">🏥 ${escapeHtml(u.ruangan)} · 📅 ${escapeHtml(u.tglDaftar)}</div>
+      </div>
+      <div class="user-actions">
+        <span class="badge badge-${u.role}">${labelRole(u.role)}</span>
+        <span class="badge ${u.aktif?'badge-sudah':'badge-batal'}">${u.aktif?'Aktif':'Nonaktif'}</span>
+        <button class="btn btn-warning btn-sm" onclick="bukaEditUser(${u.id})">✏️</button>
+      </div>
+    </div>
+  `).join("");
+}
+function labelRole(r) {
+  return { peminta:"Peminta", gudang_obat:"Gudang Obat",
+           gudang_bhp:"Gudang BHP", kepala_gudang:"Kepala Gudang" }[r] || r;
+}
+function bukaEditUser(id) {
+  const u = dataPengguna.find(x => x.id === id);
+  if (!u) return;
+  editUserId = id;
+  document.getElementById("modal-user-detail").innerHTML = `
+    <div class="modal-row"><span>Nama</span><span><b>${escapeHtml(u.nama)}</b></span></div>
+    <div class="modal-row"><span>Ruangan</span><span>${escapeHtml(u.ruangan)}</span></div>
+    <div class="modal-row"><span>Terdaftar</span><span>${escapeHtml(u.tglDaftar)}</span></div>`;
+  document.getElementById("edit-user-role").value  = u.role;
+  document.getElementById("edit-user-aktif").value = u.aktif ? "true" : "false";
+  document.getElementById("modal-edit-user").classList.add("open");
+}
+function tutupModalEditUser() {
+  document.getElementById("modal-edit-user").classList.remove("open");
+  editUserId = null;
+}
+async function simpanEditUser() {
+  if (!editUserId) return;
+  const role  = document.getElementById("edit-user-role").value;
+  const aktif = document.getElementById("edit-user-aktif").value === "true";
+  const btn = document.getElementById("btn-simpan-user");
+  btn.disabled=true; btn.textContent="Menyimpan...";
+  const res = await api({
+    action:"updatePengguna", roleAdmin:user.role,
+    id:editUserId, role, aktif
+  });
+  btn.disabled=false; btn.textContent="Simpan";
+  if (!res.ok) { showToast(res.msg,"error"); return; }
+  showToast("✅ " + res.msg, "success");
+  tutupModalEditUser();
+  loadPengguna();
+}
+
+// ═══════════════════════════════════════════════════════════
+// STATUS SAYA
+// ═══════════════════════════════════════════════════════════
+async function loadAmprahan() {
+  const el = document.getElementById("list-status");
+  el.innerHTML = loadingHtml(); document.getElementById("pag-status").innerHTML="";
+  try {
+    const res = await api({ action:"getAmprahan", role:user.role, nama:user.nama, ruangan:user.ruangan });
+    if (res.ok) { allAmprahan = res.data; pagStatus = 1; renderStatus(); }
+    else el.innerHTML = `<div class="empty">Gagal: ${res.msg}</div>`;
+  } catch(e) { el.innerHTML = `<div class="empty">Gagal terhubung.</div>`; }
+}
+function setFilterStatus(f,el) {
+  filterStatus = f; pagStatus = 1;
+  document.querySelectorAll("#tab-status .chip").forEach(c => c.classList.remove("active"));
+  el.classList.add("active"); renderStatus();
+}
+function renderStatus() {
+  const data = allAmprahan.filter(d => filterStatus==="semua" || d.status===filterStatus);
+  const el = document.getElementById("list-status");
+  if (!data.length) { el.innerHTML=`<div class="empty">Tidak ada amprahan.</div>`;
+    document.getElementById("pag-status").innerHTML=""; return; }
+  const totalHal = Math.ceil(data.length/PAGE_SIZE);
+  if (pagStatus > totalHal) pagStatus = totalHal;
+  el.innerHTML = data.slice((pagStatus-1)*PAGE_SIZE, pagStatus*PAGE_SIZE)
+    .map(d => ampItemHtml(d,false)).join("");
+  renderPagination("pag-status",pagStatus,totalHal,data.length,"gotoPagStatus");
+}
+
+// ═══════════════════════════════════════════════════════════
+// DASHBOARD GUDANG
+// ═══════════════════════════════════════════════════════════
+async function loadGudang() {
+  document.getElementById("list-gudang").innerHTML = loadingHtml();
+  document.getElementById("pag-gudang").innerHTML = "";
+  try {
+    const resData = await api({ action:"getAmprahan", role:user.role, nama:user.nama, ruangan:user.ruangan });
+    if (resData.ok) {
+      dataGudang = user.role==="kepala_gudang" ? resData.data
+        : resData.data.filter(d => isJenisSesuaiRole(d.jenisAmprahan,user.role));
+      dupSet = getDuplikatIdMutasi(dataGudang);
+      dataGudang.forEach(d => idKnown.add(d.idTransaksi));
+      pagGudang = 1; hitungStatLokal(dataGudang); renderGudang();
+    }
+  } catch(e) { document.getElementById("list-gudang").innerHTML = `<div class="empty">Gagal terhubung.</div>`; }
+}
+function hitungStatLokal(data) {
+  const jenisLabel = { gudang_obat:"Obat", gudang_bhp:"BMHP / Cairan / B3", kepala_gudang:"Semua Jenis" };
+  const label = jenisLabel[user.role] || "";
+  const sub = label ? `<div style="font-size:9px;color:#999;margin-top:2px">${label}</div>` : "";
+  document.getElementById("stat-grid").innerHTML = `
+    <div class="stat total"><div class="stat-num">${data.length}</div><div class="stat-label">Total</div>${sub}</div>
+    <div class="stat belum"><div class="stat-num">${data.filter(d=>d.status==="Belum Dilayani").length}</div><div class="stat-label">Belum Dilayani</div>${sub}</div>
+    <div class="stat sudah"><div class="stat-num">${data.filter(d=>d.status==="Sudah Dilayani").length}</div><div class="stat-label">Sudah Dilayani</div>${sub}</div>
+    <div class="stat batal"><div class="stat-num">${data.filter(d=>d.status==="Batal").length}</div><div class="stat-label">Batal</div>${sub}</div>`;
+}
+function setFilterGudang(f,el) {
+  filterGudang = f; pagGudang = 1;
+  const bars = document.querySelectorAll("#tab-gudang .panel-kiri .filter-bar");
+  if (bars[0]) bars[0].querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+  el.classList.add("active"); renderGudang();
+}
+function setFilterKategori(f,el) {
+  filterKategori = f; pagGudang = 1;
+  document.querySelectorAll("#filter-bar-kategori .chip").forEach(c => c.classList.remove("active"));
+  el.classList.add("active"); renderGudang();
+}
+function setFilterJenis(f,el) {
+  filterJenis = f; pagGudang = 1;
+  document.querySelectorAll("#filter-bar-jenis .chip").forEach(c => c.classList.remove("active"));
+  el.classList.add("active"); renderGudang();
+}
+function resetPagGudang() {
+  pagGudang = 1;
+  filterTglDari   = document.getElementById("filter-tgl-dari")?.value || "";
+  filterTglSampai = document.getElementById("filter-tgl-sampai")?.value || "";
+  renderGudang();
+}
+function getDuplikatIdMutasi(data) {
+  const counter = {};
+  data.forEach(d => { const id=String(d.noIdMutasi??"").trim(); if(!id) return; counter[id]=(counter[id]||0)+1; });
+  return new Set(Object.keys(counter).filter(k => counter[k]>1));
+}
+function renderGudang() {
+  const q = (document.getElementById("search-gudang").value||"").toLowerCase();
+  const data = dataGudang.filter(d => {
+    const mS = filterGudang==="semua" || d.status===filterGudang;
+    const mK = filterKategori==="semua" || (d.kategori||"").toLowerCase()===filterKategori.toLowerCase();
+    const mJ = filterJenis==="semua" || (d.jenisAmprahan||"").toLowerCase()===filterJenis.toLowerCase();
+    const mQ = !q || (d.asalRuangan||"").toLowerCase().includes(q)
+      || (d.namaPetugas||"").toLowerCase().includes(q)
+      || (d.idTransaksi||"").toLowerCase().includes(q)
+      || String(d.noIdMutasi??"").toLowerCase().includes(q);
+    const tgl = normTgl(d.tglAmprahan);
+    const mD = !filterTglDari || tgl >= filterTglDari;
+    const mS2 = !filterTglSampai || tgl <= filterTglSampai;
+    return mS && mK && mJ && mQ && mD && mS2;
+  });
+  const el = document.getElementById("list-gudang");
+  if (!data.length) { el.innerHTML = `<div class="empty">Tidak ada data.</div>`;
+    document.getElementById("pag-gudang").innerHTML=""; return; }
+  const dupWarning = dupSet.size>0
+    ? `<div class="dup-warning-bar">⚠️ ${dupSet.size} ID Mutasi duplikat — ditandai merah.</div>` : "";
+  const totalHal = Math.ceil(data.length/PAGE_SIZE);
+  if (pagGudang > totalHal) pagGudang = totalHal;
+  el.innerHTML = dupWarning + data.slice((pagGudang-1)*PAGE_SIZE, pagGudang*PAGE_SIZE)
+    .map(d => ampItemHtml(d,true)).join("");
+  renderPagination("pag-gudang",pagGudang,totalHal,data.length,"gotoPagGudang");
+}
+function renderPagination(containerId,halAktif,totalHal,totalData,fnName) {
+  const el = document.getElementById(containerId);
+  if (totalHal <= 1) { el.innerHTML = ""; return; }
+  const awal = (halAktif-1)*PAGE_SIZE+1;
+  const akhir = Math.min(halAktif*PAGE_SIZE,totalData);
+  let pages=[];
+  if (totalHal<=7) { for (let i=1;i<=totalHal;i++) pages.push(i); }
+  else {
+    pages=[1];
+    if (halAktif>3) pages.push("...");
+    for (let i=Math.max(2,halAktif-1);i<=Math.min(totalHal-1,halAktif+1);i++) pages.push(i);
+    if (halAktif<totalHal-2) pages.push("...");
+    pages.push(totalHal);
+  }
+  const tombol = pages.map(p => p==="..."
+    ? `<span class="pag-info">…</span>`
+    : `<button class="pag-btn${p===halAktif?" active":""}" onclick="${fnName}(${p})">${p}</button>`
+  ).join("");
+  el.innerHTML = `<div class="pagination">
+    <button class="pag-btn" onclick="${fnName}(${halAktif-1})" ${halAktif===1?"disabled":""}>‹</button>
+    ${tombol}
+    <button class="pag-btn" onclick="${fnName}(${halAktif+1})" ${halAktif===totalHal?"disabled":""}>›</button>
+    <span class="pag-info">${awal}–${akhir} / ${totalData}</span>
+  </div>`;
+}
+function normTgl(tgl) {
+  if (!tgl) return "";
+  const s = String(tgl).trim();
+  if (s.includes("/")) {
+    const p = s.split(" ")[0].split("/");
+    if (p.length===3) return p[2]+"-"+p[1].padStart(2,"0")+"-"+p[0].padStart(2,"0");
+  }
+  return s.substring(0,10);
+}
+function resetFilterTanggal() {
+  document.getElementById("filter-tgl-dari").value="";
+  document.getElementById("filter-tgl-sampai").value="";
+  filterTglDari=""; filterTglSampai=""; pagGudang=1; renderGudang();
+}
+function filterHariIni() {
+  const h = hariIni();
+  document.getElementById("filter-tgl-dari").value=h;
+  document.getElementById("filter-tgl-sampai").value=h;
+  filterTglDari=h; filterTglSampai=h; pagGudang=1; renderGudang();
+}
+function gotoPagStatus(p){ pagStatus=p; renderStatus(); }
+function gotoPagGudang(p){ pagGudang=p; renderGudang(); }
+
+function ampItemHtml(d,isGudang) {
+  const sc = d.status==="Sudah Dilayani" ? "sudah" : d.status==="Batal" ? "batal" : "belum";
+  const idMutasiHtml = dupSet.has(String(d.noIdMutasi??"").trim())
+    ? `<span class="amp-idmutasi-dup">${escapeHtml(d.noIdMutasi)}</span>` : escapeHtml(d.noIdMutasi);
+  return `
+  <div class="amp-item ${sc}">
+    <div class="amp-header">
+      <div><span class="amp-id">${escapeHtml(d.idTransaksi)}</span>
+        <span style="font-size:10px;color:#999;margin-left:6px">${escapeHtml(d.timestamp||"")}</span></div>
+      <span class="badge badge-${sc}">${escapeHtml(d.status)}</span>
+    </div>
+    <div class="amp-meta">
+      <span>🏥 ${escapeHtml(d.asalRuangan)}</span><span>👤 ${escapeHtml(d.namaPetugas)}</span>
+      <span>💊 ${escapeHtml(d.jenisAmprahan)}</span><span>⚡ ${escapeHtml(d.kategori)}</span>
+      <span>🔖 ${idMutasiHtml}</span><span>📅 ${escapeHtml(d.tglAmprahan)}</span>
+    </div>
+    ${d.keterangan?`<div class="amp-keterangan">📝 ${escapeHtml(d.keterangan)}</div>`:""}
+    ${d.catatanGudang?`<div class="amp-catatan">💬 ${escapeHtml(d.catatanGudang)}${d.tglBalasan?" · "+escapeHtml(d.tglBalasan):""}</div>`:""}
+    ${isGudang?`<div style="margin-top:8px"><button class="btn btn-warning btn-sm" onclick="bukaModal('${d.idTransaksi}')">✏️ Update Status</button></div>`:""}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAL UPDATE STATUS
+// ═══════════════════════════════════════════════════════════
+function bukaModal(id) {
+  const d = dataGudang.find(x => x.idTransaksi===id);
+  if (!d) return;
+  editId = id;
+  document.getElementById("modal-detail").innerHTML = `
+    <div class="modal-row"><span>ID Transaksi</span><span><b>${escapeHtml(d.idTransaksi)}</b></span></div>
+    <div class="modal-row"><span>Ruangan</span><span>${escapeHtml(d.asalRuangan)}</span></div>
+    <div class="modal-row"><span>Petugas</span><span>${escapeHtml(d.namaPetugas)}</span></div>
+    <div class="modal-row"><span>Jenis</span><span>${escapeHtml(d.jenisAmprahan)} · ${escapeHtml(d.kategori)}</span></div>
+    <div class="modal-row"><span>ID Mutasi</span><span>${escapeHtml(d.noIdMutasi)}</span></div>
+    <div class="modal-row"><span>Status saat ini</span><span>${escapeHtml(d.status)}</span></div>
+    ${d.keterangan?`<div class="modal-row"><span>Keterangan</span>
+      <span style="color:#555;font-size:12px;max-width:200px;text-align:right">${escapeHtml(d.keterangan)}</span></div>`:""}`;
+  document.getElementById("modal-status").value = d.status;
+  document.getElementById("modal-catatan").value = d.catatanGudang || "";
+  document.getElementById("modal-update").classList.add("open");
+}
+function tutupModal(){ document.getElementById("modal-update").classList.remove("open"); editId=null; }
+async function simpanStatus() {
+  if (!editId) return;
+  const status = document.getElementById("modal-status").value;
+  const catatan = document.getElementById("modal-catatan").value.trim();
+  const btn = document.getElementById("btn-simpan-status");
+  btn.disabled=true; btn.textContent="Menyimpan...";
+  try {
+    const res = await api({ action:"updateStatus", idTransaksi:editId, status, catatan });
+    if (res.ok) {
+      showToast("✅ Status diperbarui.","success");
+      tutupModal(); idKnown.clear(); loadGudang();
+    } else showToast("Gagal: "+res.msg,"error");
+  } catch(e) { showToast("Gagal terhubung.","error"); }
+  btn.disabled=false; btn.textContent="Simpan";
 }
 
 // ═══════════════════════════════════════════════════════════
 // LAPORAN
 // ═══════════════════════════════════════════════════════════
-let dataLaporan = [];
 async function loadLaporan() {
   const wrap = document.getElementById("lap-table-wrap");
   if (!wrap) return;
@@ -919,7 +1364,6 @@ async function loadLaporan() {
     renderLaporan();
   } catch(e) { wrap.innerHTML=`<div class="empty">Gagal terhubung ke server.</div>`; }
 }
-
 function isiDropdownTahun(data) {
   const sel = document.getElementById("lap-tahun");
   if (!sel) return;
@@ -935,7 +1379,6 @@ function isiDropdownTahun(data) {
   const tahunIni = new Date().getFullYear().toString();
   if (!curVal && sorted.includes(tahunIni)) sel.value = tahunIni;
 }
-
 function renderLaporan() {
   const wrap = document.getElementById("lap-table-wrap");
   if (!wrap || !dataLaporan.length) return;
@@ -988,7 +1431,7 @@ function renderLaporan() {
           b3=rekap[r].b3.size, ca=rekap[r].cairan.size, tot=o+bh+b3+ca;
     return `<tr>
       <td style="text-align:center;color:#888;padding:9px 8px;font-size:12px">${i+1}</td>
-      <td class="col-nama">${r}</td>
+      <td class="col-nama">${escapeHtml(r)}</td>
       <td class="${o?'lap-num':'lap-num-0'}" style="text-align:center;padding:9px 12px;font-size:12px">${o||"—"}</td>
       <td class="${bh?'lap-num':'lap-num-0'}" style="text-align:center;padding:9px 12px;font-size:12px">${bh||"—"}</td>
       <td class="${b3?'lap-num':'lap-num-0'}" style="text-align:center;padding:9px 12px;font-size:12px">${b3||"—"}</td>
@@ -1012,7 +1455,6 @@ function renderLaporan() {
       </tr></tfoot>
     </table>`;
 }
-
 function cetakLaporan() {
   const tabel = document.getElementById("laporan-tabel");
   if (!tabel) { showToast("Tidak ada data untuk dicetak.","error"); return; }
@@ -1068,228 +1510,6 @@ function resetForm() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// STATUS SAYA
-// ═══════════════════════════════════════════════════════════
-async function loadAmprahan() {
-  const el = document.getElementById("list-status");
-  el.innerHTML = loadingHtml(); document.getElementById("pag-status").innerHTML="";
-  try {
-    const res = await api({ action:"getAmprahan", role:user.role, nama:user.nama, ruangan:user.ruangan });
-    if (res.ok) { allAmprahan = res.data; pagStatus = 1; renderStatus(); }
-    else el.innerHTML = `<div class="empty">Gagal: ${res.msg}</div>`;
-  } catch(e) { el.innerHTML = `<div class="empty">Gagal terhubung.</div>`; }
-}
-function setFilterStatus(f,el) {
-  filterStatus = f; pagStatus = 1;
-  document.querySelectorAll("#tab-status .chip").forEach(c => c.classList.remove("active"));
-  el.classList.add("active"); renderStatus();
-}
-function renderStatus() {
-  const data = allAmprahan.filter(d => filterStatus==="semua" || d.status===filterStatus);
-  const el = document.getElementById("list-status");
-  if (!data.length) { el.innerHTML=`<div class="empty">Tidak ada amprahan.</div>`;
-    document.getElementById("pag-status").innerHTML=""; return; }
-  const totalHal = Math.ceil(data.length/PAGE_SIZE);
-  if (pagStatus > totalHal) pagStatus = totalHal;
-  el.innerHTML = data.slice((pagStatus-1)*PAGE_SIZE, pagStatus*PAGE_SIZE)
-    .map(d => ampItemHtml(d,false)).join("");
-  renderPagination("pag-status",pagStatus,totalHal,data.length,"gotoPagStatus");
-}
-
-// ═══════════════════════════════════════════════════════════
-// DASHBOARD GUDANG
-// ═══════════════════════════════════════════════════════════
-async function loadGudang() {
-  document.getElementById("list-gudang").innerHTML = loadingHtml();
-  document.getElementById("pag-gudang").innerHTML = "";
-  try {
-    const resData = await api({ action:"getAmprahan", role:user.role, nama:user.nama, ruangan:user.ruangan });
-    if (resData.ok) {
-      dataGudang = user.role==="kepala_gudang" ? resData.data
-        : resData.data.filter(d => isJenisSesuaiRole(d.jenisAmprahan,user.role));
-      dupSet = getDuplikatIdMutasi(dataGudang);
-      dataGudang.forEach(d => idKnown.add(d.idTransaksi));
-      pagGudang = 1; hitungStatLokal(dataGudang); renderGudang();
-    }
-  } catch(e) { document.getElementById("list-gudang").innerHTML = `<div class="empty">Gagal terhubung.</div>`; }
-}
-
-function hitungStatLokal(data) {
-  const jenisLabel = { gudang_obat:"Obat", gudang_bhp:"BMHP / Cairan / B3", kepala_gudang:"Semua Jenis" };
-  const label = jenisLabel[user.role] || "";
-  const sub = label ? `<div style="font-size:9px;color:#999;margin-top:2px">${label}</div>` : "";
-  document.getElementById("stat-grid").innerHTML = `
-    <div class="stat total"><div class="stat-num">${data.length}</div><div class="stat-label">Total</div>${sub}</div>
-    <div class="stat belum"><div class="stat-num">${data.filter(d=>d.status==="Belum Dilayani").length}</div><div class="stat-label">Belum Dilayani</div>${sub}</div>
-    <div class="stat sudah"><div class="stat-num">${data.filter(d=>d.status==="Sudah Dilayani").length}</div><div class="stat-label">Sudah Dilayani</div>${sub}</div>
-    <div class="stat batal"><div class="stat-num">${data.filter(d=>d.status==="Batal").length}</div><div class="stat-label">Batal</div>${sub}</div>`;
-}
-
-function setFilterGudang(f,el) {
-  filterGudang = f; pagGudang = 1;
-  const bars = document.querySelectorAll("#tab-gudang .panel-kiri .filter-bar");
-  if (bars[0]) bars[0].querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-  el.classList.add("active"); renderGudang();
-}
-function setFilterKategori(f,el) {
-  filterKategori = f; pagGudang = 1;
-  document.querySelectorAll("#filter-bar-kategori .chip").forEach(c => c.classList.remove("active"));
-  el.classList.add("active"); renderGudang();
-}
-function setFilterJenis(f,el) {
-  filterJenis = f; pagGudang = 1;
-  document.querySelectorAll("#filter-bar-jenis .chip").forEach(c => c.classList.remove("active"));
-  el.classList.add("active"); renderGudang();
-}
-function resetPagGudang() {
-  pagGudang = 1;
-  filterTglDari   = document.getElementById("filter-tgl-dari")?.value || "";
-  filterTglSampai = document.getElementById("filter-tgl-sampai")?.value || "";
-  renderGudang();
-}
-function getDuplikatIdMutasi(data) {
-  const counter = {};
-  data.forEach(d => { const id=String(d.noIdMutasi??"").trim(); if(!id) return; counter[id]=(counter[id]||0)+1; });
-  return new Set(Object.keys(counter).filter(k => counter[k]>1));
-}
-
-function renderGudang() {
-  const q = (document.getElementById("search-gudang").value||"").toLowerCase();
-  const data = dataGudang.filter(d => {
-    const mS = filterGudang==="semua" || d.status===filterGudang;
-    const mK = filterKategori==="semua" || (d.kategori||"").toLowerCase()===filterKategori.toLowerCase();
-    const mJ = filterJenis==="semua" || (d.jenisAmprahan||"").toLowerCase()===filterJenis.toLowerCase();
-    const mQ = !q || (d.asalRuangan||"").toLowerCase().includes(q)
-      || (d.namaPetugas||"").toLowerCase().includes(q)
-      || (d.idTransaksi||"").toLowerCase().includes(q)
-      || String(d.noIdMutasi??"").toLowerCase().includes(q);
-    const tgl = normTgl(d.tglAmprahan);
-    const mD = !filterTglDari || tgl >= filterTglDari;
-    const mS2 = !filterTglSampai || tgl <= filterTglSampai;
-    return mS && mK && mJ && mQ && mD && mS2;
-  });
-  const el = document.getElementById("list-gudang");
-  if (!data.length) { el.innerHTML = `<div class="empty">Tidak ada data.</div>`;
-    document.getElementById("pag-gudang").innerHTML=""; return; }
-  const dupWarning = dupSet.size>0
-    ? `<div class="dup-warning-bar">⚠️ ${dupSet.size} ID Mutasi duplikat — ditandai merah.</div>` : "";
-  const totalHal = Math.ceil(data.length/PAGE_SIZE);
-  if (pagGudang > totalHal) pagGudang = totalHal;
-  el.innerHTML = dupWarning + data.slice((pagGudang-1)*PAGE_SIZE, pagGudang*PAGE_SIZE)
-    .map(d => ampItemHtml(d,true)).join("");
-  renderPagination("pag-gudang",pagGudang,totalHal,data.length,"gotoPagGudang");
-}
-
-function renderPagination(containerId,halAktif,totalHal,totalData,fnName) {
-  const el = document.getElementById(containerId);
-  if (totalHal <= 1) { el.innerHTML = ""; return; }
-  const awal = (halAktif-1)*PAGE_SIZE+1;
-  const akhir = Math.min(halAktif*PAGE_SIZE,totalData);
-  let pages=[];
-  if (totalHal<=7) { for (let i=1;i<=totalHal;i++) pages.push(i); }
-  else {
-    pages=[1];
-    if (halAktif>3) pages.push("...");
-    for (let i=Math.max(2,halAktif-1);i<=Math.min(totalHal-1,halAktif+1);i++) pages.push(i);
-    if (halAktif<totalHal-2) pages.push("...");
-    pages.push(totalHal);
-  }
-  const tombol = pages.map(p => p==="..."
-    ? `<span class="pag-info">…</span>`
-    : `<button class="pag-btn${p===halAktif?" active":""}" onclick="${fnName}(${p})">${p}</button>`
-  ).join("");
-  el.innerHTML = `<div class="pagination">
-    <button class="pag-btn" onclick="${fnName}(${halAktif-1})" ${halAktif===1?"disabled":""}>‹</button>
-    ${tombol}
-    <button class="pag-btn" onclick="${fnName}(${halAktif+1})" ${halAktif===totalHal?"disabled":""}>›</button>
-    <span class="pag-info">${awal}–${akhir} / ${totalData}</span>
-  </div>`;
-}
-
-function normTgl(tgl) {
-  if (!tgl) return "";
-  const s = String(tgl).trim();
-  if (s.includes("/")) {
-    const p = s.split(" ")[0].split("/");
-    if (p.length===3) return p[2]+"-"+p[1].padStart(2,"0")+"-"+p[0].padStart(2,"0");
-  }
-  return s.substring(0,10);
-}
-function resetFilterTanggal() {
-  document.getElementById("filter-tgl-dari").value="";
-  document.getElementById("filter-tgl-sampai").value="";
-  filterTglDari=""; filterTglSampai=""; pagGudang=1; renderGudang();
-}
-function filterHariIni() {
-  const h = hariIni();
-  document.getElementById("filter-tgl-dari").value=h;
-  document.getElementById("filter-tgl-sampai").value=h;
-  filterTglDari=h; filterTglSampai=h; pagGudang=1; renderGudang();
-}
-function tutupPengumuman(){ document.getElementById("blok-pengumuman").style.display="none"; ajustSplitHeight(); }
-function gotoPagStatus(p){ pagStatus=p; renderStatus(); }
-function gotoPagGudang(p){ pagGudang=p; renderGudang(); }
-
-function ampItemHtml(d,isGudang) {
-  const sc = d.status==="Sudah Dilayani" ? "sudah" : d.status==="Batal" ? "batal" : "belum";
-  const idMutasiHtml = dupSet.has(String(d.noIdMutasi??"").trim())
-    ? `<span class="amp-idmutasi-dup">${d.noIdMutasi}</span>` : d.noIdMutasi;
-  return `
-  <div class="amp-item ${sc}">
-    <div class="amp-header">
-      <div><span class="amp-id">${d.idTransaksi}</span>
-        <span style="font-size:10px;color:#999;margin-left:6px">${d.timestamp||""}</span></div>
-      <span class="badge badge-${sc}">${d.status}</span>
-    </div>
-    <div class="amp-meta">
-      <span>🏥 ${d.asalRuangan}</span><span>👤 ${d.namaPetugas}</span>
-      <span>💊 ${d.jenisAmprahan}</span><span>⚡ ${d.kategori}</span>
-      <span>🔖 ${idMutasiHtml}</span><span>📅 ${d.tglAmprahan}</span>
-    </div>
-    ${d.keterangan?`<div class="amp-keterangan">📝 ${d.keterangan}</div>`:""}
-    ${d.catatanGudang?`<div class="amp-catatan">💬 ${d.catatanGudang}${d.tglBalasan?" · "+d.tglBalasan:""}</div>`:""}
-    ${isGudang?`<div style="margin-top:8px"><button class="btn btn-warning btn-sm" onclick="bukaModal('${d.idTransaksi}')">✏️ Update Status</button></div>`:""}
-  </div>`;
-}
-
-// ═══════════════════════════════════════════════════════════
-// MODAL UPDATE STATUS
-// ═══════════════════════════════════════════════════════════
-function bukaModal(id) {
-  const d = dataGudang.find(x => x.idTransaksi===id);
-  if (!d) return;
-  editId = id;
-  document.getElementById("modal-detail").innerHTML = `
-    <div class="modal-row"><span>ID Transaksi</span><span><b>${d.idTransaksi}</b></span></div>
-    <div class="modal-row"><span>Ruangan</span><span>${d.asalRuangan}</span></div>
-    <div class="modal-row"><span>Petugas</span><span>${d.namaPetugas}</span></div>
-    <div class="modal-row"><span>Jenis</span><span>${d.jenisAmprahan} · ${d.kategori}</span></div>
-    <div class="modal-row"><span>ID Mutasi</span><span>${d.noIdMutasi}</span></div>
-    <div class="modal-row"><span>Status saat ini</span><span>${d.status}</span></div>
-    ${d.keterangan?`<div class="modal-row"><span>Keterangan</span>
-      <span style="color:#555;font-size:12px;max-width:200px;text-align:right">${d.keterangan}</span></div>`:""}`;
-  document.getElementById("modal-status").value = d.status;
-  document.getElementById("modal-catatan").value = d.catatanGudang || "";
-  document.getElementById("modal-update").classList.add("open");
-}
-function tutupModal(){ document.getElementById("modal-update").classList.remove("open"); editId=null; }
-async function simpanStatus() {
-  if (!editId) return;
-  const status = document.getElementById("modal-status").value;
-  const catatan = document.getElementById("modal-catatan").value.trim();
-  const btn = document.getElementById("btn-simpan-status");
-  btn.disabled=true; btn.textContent="Menyimpan...";
-  try {
-    const res = await api({ action:"updateStatus", idTransaksi:editId, status, catatan });
-    if (res.ok) {
-      showToast("✅ Status diperbarui.","success");
-      tutupModal(); idKnown.clear(); loadGudang();
-    } else showToast("Gagal: "+res.msg,"error");
-  } catch(e) { showToast("Gagal terhubung.","error"); }
-  btn.disabled=false; btn.textContent="Simpan";
-}
-
-// ═══════════════════════════════════════════════════════════
 // RKO
 // ═══════════════════════════════════════════════════════════
 const BULAN_ID = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI",
@@ -1318,19 +1538,12 @@ async function cekStatusRKO() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// HELPERS
+// EVENT LISTENER
 // ═══════════════════════════════════════════════════════════
-function hariIni(){ return new Date().toISOString().split("T")[0]; }
-function loadingHtml(){ return `<div class="loading"><div class="spinner"></div><br>Memuat data...</div>`; }
-function showToast(msg,type="info"){
-  const t = document.getElementById("toast");
-  t.textContent = msg; t.className = "toast "+type+" show";
-  setTimeout(() => t.classList.remove("show"), 3500);
-}
-
 document.getElementById("modal-update").addEventListener("click", function(e){ if(e.target===this) tutupModal(); });
 document.getElementById("modal-daftar").addEventListener("click", function(e){ if(e.target===this) tutupModalDaftar(); });
 document.getElementById("modal-edit-user").addEventListener("click", function(e){ if(e.target===this) tutupModalEditUser(); });
+document.getElementById("modal-pengumuman").addEventListener("click", function(e){ if(e.target===this) tutupModalPengumuman(); });
 document.getElementById("login-nama").addEventListener("keydown", e => { if(e.key==="Enter") document.getElementById("login-ruangan").focus(); });
 </script>
 </body>
