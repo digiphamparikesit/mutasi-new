@@ -1550,6 +1550,67 @@ function getDuplikatIdMutasi(data) {
   data.forEach(d => { const id=String(d.noIdMutasi??"").trim(); if(!id) return; counter[id]=(counter[id]||0)+1; });
   return new Set(Object.keys(counter).filter(k => counter[k]>1));
 }
+ function lihatDaftarDuplikat() {
+  if (!dupSet || !dupSet.size) {
+    showToast("Tidak ada ID Mutasi duplikat.","info");
+    return;
+  }
+
+  // Hitung jumlah per ID
+  const counter = {};
+  dataGudang.forEach(d => {
+    const id = String(d.noIdMutasi ?? "").trim();
+    if (!id) return;
+    counter[id] = (counter[id] || 0) + 1;
+  });
+
+  const dupList = Object.keys(counter)
+    .filter(k => counter[k] > 1)
+    .sort((a, b) => counter[b] - counter[a]);
+
+  // Build list HTML
+  const items = dupList.map(id => {
+    const count = counter[id];
+    const rows = dataGudang.filter(d => String(d.noIdMutasi ?? "").trim() === id);
+    const sub = rows.slice(0, 3).map(r =>
+      `<div style="font-size:10px;color:#78716c;margin-left:8px;margin-top:2px">
+         ${escapeHtml(r.idTransaksi)} · ${escapeHtml(r.asalRuangan)} · ${escapeHtml(r.status)}
+       </div>`
+    ).join("");
+    const more = rows.length > 3 ? `<div style="font-size:10px;color:#a8a29e;margin-left:8px">+${rows.length - 3} lainnya</div>` : "";
+    return `
+      <div class="aged-item" style="cursor:default;background:#fff8e1;border-left-color:#ff8800;margin-bottom:6px">
+        <div class="aged-id" style="color:#92400e">
+          <span>🔖 ${escapeHtml(id)}</span>
+          <span class="aged-age" style="color:#ff8800">${count}x</span>
+        </div>
+        ${sub}
+        ${more}
+      </div>`;
+  }).join("");
+
+  // Tampilkan di modal overlay
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay open";
+  modal.style.zIndex = "200";
+  modal.innerHTML = `
+    <div class="modal" style="max-width:520px;max-height:80vh;overflow-y:auto">
+      <h3>ℹ️ Daftar ID Mutasi Duplikat</h3>
+      <p style="font-size:12px;color:#666;margin-bottom:14px;font-weight:500">
+        Total <b>${dupList.length} ID</b> dipakai lebih dari sekali. Klik salah satu kartu amprahan di dashboard untuk update status.
+      </p>
+      <div style="max-height:400px;overflow-y:auto;padding-right:6px">
+        ${items}
+      </div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Tutup</button>
+      </div>
+    </div>`;
+  modal.addEventListener("click", function(e) {
+    if (e.target === modal) modal.remove();
+  });
+  document.body.appendChild(modal);
+}
 function renderGudang() {
   const q = (document.getElementById("search-gudang").value||"").toLowerCase();
   const data = dataGudang.filter(d => {
@@ -1569,7 +1630,10 @@ function renderGudang() {
   if (!data.length) { el.innerHTML = `<div class="empty">Tidak ada data.</div>`;
     document.getElementById("pag-gudang").innerHTML=""; return; }
   const dupWarning = dupSet.size>0
-    ? `<div class="dup-warning-bar">⚠️ ${dupSet.size} ID Mutasi duplikat — ditandai merah.</div>` : "";
+  ? `<div class="dup-warning-bar" style="background:#fff8e1;border-color:#ffe082;color:#795548">
+       ℹ️ <b>${dupSet.size} ID Mutasi</b> dipakai lebih dari sekali (historis). ID ditandai <span style="background:#fde8e8;color:#c81e1e;padding:1px 5px;border-radius:4px;font-weight:700">merah</span>.
+       <button onclick="lihatDaftarDuplikat()" style="background:#ff8800;color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-weight:700;margin-left:auto">Lihat Daftar</button>
+     </div>` : "";
   const totalHal = Math.ceil(data.length/PAGE_SIZE);
   if (pagGudang > totalHal) pagGudang = totalHal;
   el.innerHTML = dupWarning + data.slice((pagGudang-1)*PAGE_SIZE, pagGudang*PAGE_SIZE)
