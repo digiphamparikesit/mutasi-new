@@ -1321,9 +1321,21 @@ function renderKepalaWidgets() {
   const wrap = document.getElementById("kepala-widgets");
   if (!wrap) return;
   wrap.style.display = "block";
-  renderTrend7Hari(dataGudang);
-  renderTopRuangan(dataGudang);
-  renderAgedAmprahan(dataGudang);
+
+  if (!dataGudang || !dataGudang.length) {
+    const loading = `<div class="aged-empty">Memuat data...</div>`;
+    const t = document.getElementById("trend-chart");
+    const r = document.getElementById("top-ruangan");
+    const a = document.getElementById("aged-list");
+    if (t) t.innerHTML = loading;
+    if (r) r.innerHTML = loading;
+    if (a) a.innerHTML = loading;
+    return;
+  }
+
+  try { renderTrend7Hari(dataGudang); } catch(e) { console.error("Trend error:", e); }
+  try { renderTopRuangan(dataGudang); } catch(e) { console.error("Top error:", e); }
+  try { renderAgedAmprahan(dataGudang); } catch(e) { console.error("Aged error:", e); }
 }
 
 function renderTrend7Hari(data) {
@@ -1377,7 +1389,59 @@ function renderTrend7Hari(data) {
       </div>`;
   }).join("");
 }
+function renderTopRuangan(data) {
+  const el = document.getElementById("top-ruangan");
+  if (!el) {
+    console.warn("⚠️ Elemen #top-ruangan tidak ditemukan");
+    return;
+  }
 
+  if (!data || !data.length) {
+    el.innerHTML = `<div class="aged-empty">Belum ada data</div>`;
+    return;
+  }
+
+  try {
+    const counter = {};
+    for (let i = 0; i < data.length; i++) {
+      const d = data[i];
+      if (!d) continue;
+      const r = (d.asalRuangan != null) ? String(d.asalRuangan).trim() : "";
+      if (!r) continue;
+      counter[r] = (counter[r] || 0) + 1;
+    }
+
+    const keys = Object.keys(counter);
+    const arr = [];
+    for (let i = 0; i < keys.length; i++) {
+      arr.push([keys[i], counter[keys[i]]]);
+    }
+    arr.sort(function(a, b) { return b[1] - a[1]; });
+    const sorted = arr.slice(0, 5);
+
+    if (!sorted.length) {
+      el.innerHTML = `<div class="aged-empty">Belum ada data</div>`;
+      return;
+    }
+
+    let html = "";
+    for (let i = 0; i < sorted.length; i++) {
+      const nama = sorted[i][0];
+      const count = sorted[i][1];
+      const cls = i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
+      html += '<div class="top-item">'
+            + '<div class="top-rank ' + cls + '">' + (i + 1) + '</div>'
+            + '<div class="top-name" title="' + escapeHtml(nama) + '">' + escapeHtml(nama) + '</div>'
+            + '<div class="top-count">' + count + '</div>'
+            + '</div>';
+    }
+    el.innerHTML = html;
+    console.log("✅ renderTopRuangan sukses:", sorted.length, "item");
+  } catch (err) {
+    console.error("❌ Error di renderTopRuangan:", err);
+    el.innerHTML = '<div class="aged-empty" style="color:#dc2626;background:#fee2e2;border-radius:6px;padding:10px;font-weight:700">⚠️ Error: ' + err.message + '</div>';
+  }
+}
 function renderAgedAmprahan(data) {
   const el = document.getElementById("aged-list");
   if (!el) return;
