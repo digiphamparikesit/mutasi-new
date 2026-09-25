@@ -1329,21 +1329,41 @@ function renderKepalaWidgets() {
 function renderTrend7Hari(data) {
   const el = document.getElementById("trend-chart");
   if (!el) return;
+
+  // Cari tanggal terbaru dari data
+  let latest = null;
+  data.forEach(d => {
+    const tgl = normTgl(d.tglAmprahan);
+    if (tgl && (!latest || tgl > latest)) latest = tgl;
+  });
+
+  // Kalau tidak ada data sama sekali
+  if (!latest) {
+    el.innerHTML = `<div style="width:100%;text-align:center;color:#aaa;font-size:12px;padding:30px 0">Belum ada data</div>`;
+    return;
+  }
+
+  // Buat 7 hari terakhir berdasarkan tanggal terbaru
   const days = [];
-  const now = new Date();
+  const baseDate = new Date(latest + "T00:00:00");
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    const iso = d.toISOString().split("T")[0];
+    const d = new Date(baseDate);
+    d.setDate(baseDate.getDate() - i);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const iso = `${yyyy}-${mm}-${dd}`;
     const label = d.toLocaleDateString("id-ID", { weekday: "short" });
     days.push({ iso, label, count: 0, isToday: i === 0 });
   }
+
   data.forEach(d => {
     const tgl = normTgl(d.tglAmprahan);
     if (!tgl) return;
     const found = days.find(x => x.iso === tgl);
     if (found) found.count++;
   });
+
   const max = Math.max(...days.map(d => d.count), 1);
   el.innerHTML = days.map(d => {
     const pct = (d.count / max) * 100;
@@ -1354,30 +1374,6 @@ function renderTrend7Hari(data) {
         <div class="trend-count">${d.count || ""}</div>
         <div class="trend-bar ${cls}" style="height:${h}%"></div>
         <div class="trend-day ${d.isToday ? 'today' : ''}">${d.label}</div>
-      </div>`;
-  }).join("");
-}
-
-function renderTopRuangan(data) {
-  const el = document.getElementById("top-ruangan");
-  if (!el) return;
-  const counter = {};
-  data.forEach(d => {
-    const r = (d.asalRuangan || "-").trim();
-    counter[r] = (counter[r] || 0) + 1;
-  });
-  const sorted = Object.entries(counter).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  if (!sorted.length) {
-    el.innerHTML = `<div class="aged-empty">Belum ada data</div>`;
-    return;
-  }
-  el.innerHTML = sorted.map(([nama, count], i) => {
-    const cls = i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
-    return `
-      <div class="top-item">
-        <div class="top-rank ${cls}">${i + 1}</div>
-        <div class="top-name" title="${escapeHtml(nama)}">${escapeHtml(nama)}</div>
-        <div class="top-count">${count}</div>
       </div>`;
   }).join("");
 }
