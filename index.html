@@ -255,7 +255,11 @@
   .aged-age{font-weight:700;color:#dc2626;font-size:11px;flex-shrink:0}
   .aged-meta{font-size:10px;color:#78716c;margin-top:3px;font-weight:500;line-height:1.4}
   .aged-empty{font-size:11px;color:#166534;font-weight:700;padding:10px;background:#f0fdf4;border-radius:6px;text-align:center}
-
+  .kepala-widget h4{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;gap:6px}
+  .kepala-widget h4 .widget-toggle{font-size:9px;color:#999;transition:transform 0.2s;flex-shrink:0}
+  .kepala-widget.collapsed h4 .widget-toggle{transform:rotate(-90deg)}
+  .kepala-widget.collapsed .widget-body{display:none}
+  .widget-body{margin-top:4px}
   @media print{
     .sticky-header,.laporan-filter button,.btn-rko,.notif-banner,.sidebar{display:none!important}
     .laporan-panel{position:static;overflow:visible}
@@ -408,21 +412,36 @@
 
           <!-- WIDGET KHUSUS KEPALA GUDANG -->
           <div id="kepala-widgets" style="display:none">
-            <div class="kepala-widget">
-              <h4>📈 Trend 7 Hari Terakhir</h4>
-              <div class="trend-chart" id="trend-chart"></div>
-            </div>
+  <div class="kepala-widget" data-widget="trend">
+    <h4 onclick="toggleWidget('trend')">
+      <span>📈 Trend 7 Hari Terakhir</span>
+      <span class="widget-toggle">▼</span>
+    </h4>
+    <div class="widget-body">
+      <div class="trend-chart" id="trend-chart"></div>
+    </div>
+  </div>
 
-            <div class="kepala-widget">
-              <h4>🔥 Top 5 Ruangan Aktif</h4>
-              <div class="top-list" id="top-ruangan"></div>
-            </div>
+  <div class="kepala-widget" data-widget="top">
+    <h4 onclick="toggleWidget('top')">
+      <span>🔥 Top 5 Ruangan Aktif</span>
+      <span class="widget-toggle">▼</span>
+    </h4>
+    <div class="widget-body">
+      <div class="top-list" id="top-ruangan"></div>
+    </div>
+  </div>
 
-            <div class="kepala-widget">
-              <h4>⏰ Menumpuk &gt;24 Jam</h4>
-              <div id="aged-list"></div>
-            </div>
-          </div>
+  <div class="kepala-widget" data-widget="aged">
+    <h4 onclick="toggleWidget('aged')">
+      <span>⏰ Menumpuk &gt;24 Jam</span>
+      <span class="widget-toggle">▼</span>
+    </h4>
+    <div class="widget-body">
+      <div id="aged-list"></div>
+    </div>
+  </div>
+</div>
 
           <div class="panel-title">📊 Statistik</div>
           <div class="stat-grid" id="stat-grid">
@@ -443,7 +462,10 @@
             <input type="date" id="filter-tgl-dari" onchange="resetPagGudang()">
             <span class="tgl-separator">s/d</span>
             <input type="date" id="filter-tgl-sampai" onchange="resetPagGudang()">
-            <button class="btn btn-secondary btn-sm" onclick="resetFilterTanggal()">✕</button>
+            <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn btn-secondary btn-sm" onclick="loadGudang()" style="flex:1">↻ Refresh</button>
+            <button class="btn btn-primary btn-sm" onclick="exportCSV()" style="flex:1">📥 Export CSV</button>
+          </div>
             <button class="btn btn-primary btn-sm" onclick="filterHariIni()">Hari Ini</button>
           </div>
           <div class="filter-bar" id="filter-bar-kategori">
@@ -1321,6 +1343,7 @@ function renderKepalaWidgets() {
   const wrap = document.getElementById("kepala-widgets");
   if (!wrap) return;
   wrap.style.display = "block";
+  restoreWidgetPrefs();
 
   if (!dataGudang || !dataGudang.length) {
     const loading = `<div class="aged-empty">Memuat data...</div>`;
@@ -1545,6 +1568,92 @@ function resetPagGudang() {
   filterTglSampai = document.getElementById("filter-tgl-sampai")?.value || "";
   renderGudang();
 }
+ // ═══════════════════════════════════════════════════════════
+// TOGGLE WIDGET (collapse/expand)
+// ═══════════════════════════════════════════════════════════
+function toggleWidget(widgetKey) {
+  const wrap = document.querySelector(`.kepala-widget[data-widget="${widgetKey}"]`);
+  if (!wrap) return;
+  wrap.classList.toggle("collapsed");
+
+  try {
+    const prefs = JSON.parse(localStorage.getItem("widget_prefs") || "{}");
+    prefs[widgetKey] = wrap.classList.contains("collapsed");
+    localStorage.setItem("widget_prefs", JSON.stringify(prefs));
+  } catch(e) {}
+}
+
+function restoreWidgetPrefs() {
+  try {
+    const prefs = JSON.parse(localStorage.getItem("widget_prefs") || "{}");
+    Object.keys(prefs).forEach(k => {
+      const wrap = document.querySelector(`.kepala-widget[data-widget="${k}"]`);
+      if (wrap && prefs[k]) wrap.classList.add("collapsed");
+    });
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT CSV
+// ═══════════════════════════════════════════════════════════
+function exportCSV() {
+  const q = (document.getElementById("search-gudang").value||"").toLowerCase();
+  const data = dataGudang.filter(d => {
+    const mS = filterGudang==="semua" || d.status===filterGudang;
+    const mK = filterKategori==="semua" || (d.kategori||"").toLowerCase()===filterKategori.toLowerCase();
+    const mJ = filterJenis==="semua" || (d.jenisAmprahan||"").toLowerCase()===filterJenis.toLowerCase();
+    const mQ = !q || (d.asalRuangan||"").toLowerCase().includes(q)
+      || (d.namaPetugas||"").toLowerCase().includes(q)
+      || (d.idTransaksi||"").toLowerCase().includes(q)
+      || String(d.noIdMutasi??"").toLowerCase().includes(q);
+    const tgl = normTgl(d.tglAmprahan);
+    const mD = !filterTglDari || tgl >= filterTglDari;
+    const mS2 = !filterTglSampai || tgl <= filterTglSampai;
+    return mS && mK && mJ && mQ && mD && mS2;
+  });
+
+  if (!data.length) {
+    showToast("Tidak ada data untuk diexport.","error");
+    return;
+  }
+
+  const headers = [
+    "ID Transaksi", "Timestamp", "Asal Ruangan", "Tanggal Amprahan",
+    "Jenis", "Nama Petugas", "ID Mutasi", "Status", "Kategori",
+    "Tanggal Balasan", "Catatan Gudang", "Keterangan"
+  ];
+
+  function csvField(v) {
+    const s = String(v ?? "");
+    if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  }
+
+  const rows = data.map(d => [
+    d.idTransaksi, d.timestamp, d.asalRuangan, d.tglAmprahan,
+    d.jenisAmprahan, d.namaPetugas, d.noIdMutasi, d.status, d.kategori,
+    d.tglBalasan, d.catatanGudang, d.keterangan
+  ].map(csvField).join(","));
+
+  const csv = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const tanggal = new Date().toISOString().split("T")[0];
+  a.href = url;
+  a.download = `amprahan_${tanggal}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`✅ ${data.length} baris diexport ke CSV.`, "success");
+}
+
+// ═══════════════════════════════════════════════════════════
 function getDuplikatIdMutasi(data) {
   const counter = {};
   data.forEach(d => { const id=String(d.noIdMutasi??"").trim(); if(!id) return; counter[id]=(counter[id]||0)+1; });
